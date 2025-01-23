@@ -1,3 +1,135 @@
+const express = require("express");
+const cors = require("cors");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const app = express();
+const PORT = 5001;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+const apiKey = "AIzaSyAaUgKha2GsgfWpnbZiB42ycOZKYthfw98";
+
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
+
+const generationConfig = {
+  temperature: 0.7,
+  maxOutputTokens: 800,
+};
+
+// Endpoint to fetch climate impact analysis
+app.post("/climate-impact", async (req, res) => {
+  try {
+    const { artifactName } = req.body;
+
+    if (!artifactName) {
+      return res.status(400).json({ error: "Artifact name is required" });
+    }
+
+    const prompt = `For ${artifactName}, fetch the climatic conditions of the artifact's location, including the following: temperature, humidity, UV exposure, and air quality. Perform a climate impact analysis based on these conditions, assess the risk to the artifact's preservation, and provide preventive care guidelines.`;
+
+    const response = await model.generateText({
+      prompt,
+      generationConfig,
+    });
+
+    res.json({ analysis: response.text });
+    console.log("Generated Analysis:", response.text);
+  } catch (error) {
+    console.error("Error in /climate-impact endpoint:", error.message);
+    res.status(500).json({ error: "Failed to fetch climate impact analysis." });
+  }
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
+
+
+
+
+
+
+
+
+// const express = require("express");
+// const cors = require("cors");
+// const {
+//   GoogleGenerativeAI,
+// } = require("@google/generative-ai");
+
+// const app = express();
+// const PORT = 5001;
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Google Generative AI setup
+// const apiKey = "AIzaSyAaUgKha2GsgfWpnbZiB42ycOZKYthfw98"; // Ensure this is set in your environment variables
+// const genAI = new GoogleGenerativeAI(apiKey);
+
+// const model = genAI.getGenerativeModel({
+//   model: "gemini-1.5-flash",
+// });
+
+// const generationConfig = {
+//   temperature: 1,
+//   topP: 0.95,
+//   topK: 40,
+//   maxOutputTokens: 8192,
+//   responseMimeType: "text/plain",
+// };
+
+// // Endpoint to fetch climate impact analysis
+// app.post("/climate-impact", async (req, res) => {
+//   try {
+//     const { artifactName } = req.body;
+
+//     if (!artifactName) {
+//       return res.status(400).json({ error: "Artifact name is required" });
+//     }
+
+//     const prompt = `For ${artifactName}, fetch the climatic conditions of the artifact's location, including the following: temperature, humidity, UV exposure, and air quality. Perform a climate impact analysis based on these conditions, assess the risk to the artifact's preservation, and provide preventive care guidelines. Ensure that the analysis is specific to the region's climate and tailored to the artifact's materials and age.`
+
+    
+
+//     const result = await model.generateContent([
+//         { text: prompt },
+//       ]);
+  
+//       res.json({ analysis: result.response.text() });
+
+//       console.log(result.response.text());
+
+//     // console.log(response.response.text);
+//   } catch (error) {
+//     console.error("Error generating response:", error.message);
+//     res.status(500).json({ error: "Failed to fetch climate impact analysis" });
+//   }
+// });
+
+// // Start the server
+// app.listen(PORT, () => {
+//   console.log(`Server running at http://localhost:${PORT}`);
+// });
+
+
+
+
+
+
+
+
+
 // const express = require("express");
 // const cors = require("cors");
 // const multer = require("multer");
