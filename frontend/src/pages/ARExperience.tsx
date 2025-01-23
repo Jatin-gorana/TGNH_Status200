@@ -83,27 +83,27 @@ const ARExperience: React.FC = () => {
           <div className="text-center">
             <h1 className="text-4xl font-serif mb-6">3D & AR Experience</h1>
             <p className="text-xl text-stone-300 mb-12 max-w-2xl mx-auto">
-              Step into history with our immersive AR technology.
+              Step into history with our immersive AR technology. Upload your image and explore 3D models with ease.
             </p>
           </div>
         </div>
       </section>
 
       {/* Main Section */}
-      <div className="container mx-auto p-6 bg-stone-50 shadow-lg rounded-lg">
-        <div className="mb-4">
+      <div className="container mx-auto p-8 bg-stone-50 shadow-2xl rounded-xl">
+        <div className="mb-6 px-10">
           <input
             type="text"
-            className="border border-stone-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+            className="border border-stone-300 p-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700 transition duration-300"
             placeholder="Enter image URL"
             value={imageURL}
             onChange={(e) => setImageURL(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-4 mb-6 px-10">
           <button
-            className="bg-amber-700 hover:bg-amber-800 text-white px-6 py-2 rounded-lg shadow-md"
+            className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
             onClick={handleUpload}
             disabled={loading}
           >
@@ -112,7 +112,7 @@ const ARExperience: React.FC = () => {
 
           {taskId && (
             <button
-              className="bg-stone-800 hover:bg-stone-900 text-white px-6 py-2 rounded-lg shadow-md"
+              className="bg-stone-800 hover:bg-stone-900 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
               onClick={fetchResult}
               disabled={loading}
             >
@@ -122,30 +122,30 @@ const ARExperience: React.FC = () => {
         </div>
 
         {progress !== null && (
-          <div className="mb-4">
+          <div className="mb-6">
             <div className="h-4 bg-stone-200 rounded-full overflow-hidden">
               <div
                 className="h-full bg-amber-700 transition-all"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <p className="text-sm text-stone-600 mt-2">
+            <p className="text-xl text-stone-600 mt-2 text-center">
               Progress: {progress}% {progress === 100 && "✅"}
             </p>
           </div>
         )}
 
-        {error && <div className="text-red-500 mb-4">{error}</div>}
+        {error && <div className="text-red-500 mb-6">{error}</div>}
 
         {modelData && (
-          <div className="mt-4 bg-stone-100 p-4 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold mb-2 text-stone-800">3D Model Links</h2>
-            <ul className="list-disc ml-6">
+          <div className="mt-6 bg-stone-100 p-6 rounded-lg shadow-xl">
+            <h2 className="text-3xl font-semibold mb-4 text-stone-800">3D Model Links</h2>
+            <ul className="list-disc ml-6 space-y-2">
               <li>
                 <a
                   href={modelData.model_urls.glb}
                   download
-                  className="text-amber-700 underline hover:text-amber-800"
+                  className="text-amber-700 underline hover:text-amber-800 transition duration-300"
                 >
                   Download 3D GLB File
                 </a>
@@ -155,13 +155,13 @@ const ARExperience: React.FC = () => {
         )}
 
         {/* GLB Viewer */}
-        <div className="mt-8 bg-white/90 p-6 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4 text-stone-800">GLB Viewer</h3>
+        <div className="mt-10 bg-white p-8 rounded-lg shadow-lg">
+          <h3 className="text-2xl font-semibold mb-6 text-stone-800">GLB Model Viewer</h3>
           <input
             type="file"
             accept=".glb"
             onChange={handleGlbUpload}
-            className="mb-4 bg-stone-100 p-2 rounded-lg border border-stone-300"
+            className="mb-6 bg-stone-100 p-3 rounded-lg border border-stone-300 hover:bg-stone-200 transition duration-300"
           />
           {glbFile ? (
             <model-viewer
@@ -182,6 +182,203 @@ const ARExperience: React.FC = () => {
 };
 
 export default ARExperience;
+
+
+
+
+
+
+
+
+
+
+
+// perfect
+
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import "@google/model-viewer"; // Import the model viewer
+
+// const ARExperience: React.FC = () => {
+//   const [imageURL, setImageURL] = useState<string>("");
+//   const [taskId, setTaskId] = useState<string | null>(null);
+//   const [modelData, setModelData] = useState<any>(null);
+//   const [loading, setLoading] = useState<boolean>(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [progress, setProgress] = useState<number | null>(null);
+//   const [glbFile, setGlbFile] = useState<File | null>(null);
+//   const [pollingIntervalId, setPollingIntervalId] = useState<NodeJS.Timeout | null>(null);
+
+//   const handleUpload = async () => {
+//     if (!imageURL) {
+//       setError("Please provide an image URL");
+//       return;
+//     }
+
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const response = await axios.post("http://localhost:5000/api/convert", { image_url: imageURL });
+//       setTaskId(response.data.taskId);
+//       setModelData(null);
+//       setProgress(0); // Reset progress for a new task
+//     } catch (err: any) {
+//       setError(
+//         err.response?.status === 429
+//           ? "Too many requests. Please try again later."
+//           : "Failed to upload image for conversion"
+//       );
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const fetchResult = async () => {
+//     if (!taskId) return;
+
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const response = await axios.get(`http://localhost:5000/api/result/${taskId}`);
+//       setProgress(response.data.progress);
+
+//       if (response.data.status === "SUCCEEDED") {
+//         clearInterval(pollingIntervalId!); // Stop polling when the task is completed
+//         setModelData(response.data);
+//         setProgress(100); // Ensure progress shows as 100% on completion
+//       }
+//     } catch (err: any) {
+//       setError("Failed to fetch 3D model data");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (taskId) {
+//       // Start polling every 30 seconds
+//       const intervalId = setInterval(fetchResult, 30000);
+//       setPollingIntervalId(intervalId);
+
+//       return () => clearInterval(intervalId); // Cleanup polling on component unmount
+//     }
+//   }, [taskId]);
+
+//   const handleGlbUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     if (e.target.files && e.target.files[0]) {
+//       setGlbFile(e.target.files[0]);
+//     }
+//   };
+
+//   return (
+//     <div className="bg-stone-50 min-h-screen text-stone-800">
+//       {/* Hero Section */}
+//       <section className="bg-stone-900 text-white py-20">
+//         <div className="max-w-7xl mx-auto px-4 pt-20 sm:px-6 lg:px-8">
+//           <div className="text-center">
+//             <h1 className="text-4xl font-serif mb-6">3D & AR Experience</h1>
+//             <p className="text-xl text-stone-300 mb-12 max-w-2xl mx-auto">
+//               Step into history with our immersive AR technology.
+//             </p>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Main Section */}
+//       <div className="container mx-auto p-6 bg-stone-50 shadow-lg rounded-lg">
+//         <div className="mb-4">
+//           <input
+//             type="text"
+//             className="border border-stone-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700"
+//             placeholder="Enter image URL"
+//             value={imageURL}
+//             onChange={(e) => setImageURL(e.target.value)}
+//           />
+//         </div>
+
+//         <div className="flex items-center gap-4 mb-4">
+//           <button
+//             className="bg-amber-700 hover:bg-amber-800 text-white px-6 py-2 rounded-lg shadow-md"
+//             onClick={handleUpload}
+//             disabled={loading}
+//           >
+//             Upload Image
+//           </button>
+
+//           {taskId && (
+//             <button
+//               className="bg-stone-800 hover:bg-stone-900 text-white px-6 py-2 rounded-lg shadow-md"
+//               onClick={fetchResult}
+//               disabled={loading}
+//             >
+//               Fetch 3D Model
+//             </button>
+//           )}
+//         </div>
+
+//         {progress !== null && (
+//           <div className="mb-4">
+//             <div className="h-4 bg-stone-200 rounded-full overflow-hidden">
+//               <div
+//                 className="h-full bg-amber-700 transition-all"
+//                 style={{ width: `${progress}%` }}
+//               ></div>
+//             </div>
+//             <p className="text-sm text-stone-600 mt-2">
+//               Progress: {progress}% {progress === 100 && "✅"}
+//             </p>
+//           </div>
+//         )}
+
+//         {error && <div className="text-red-500 mb-4">{error}</div>}
+
+//         {modelData && (
+//           <div className="mt-4 bg-stone-100 p-4 rounded-lg shadow">
+//             <h2 className="text-2xl font-semibold mb-2 text-stone-800">3D Model Links</h2>
+//             <ul className="list-disc ml-6">
+//               <li>
+//                 <a
+//                   href={modelData.model_urls.glb}
+//                   download
+//                   className="text-amber-700 underline hover:text-amber-800"
+//                 >
+//                   Download 3D GLB File
+//                 </a>
+//               </li>
+//             </ul>
+//           </div>
+//         )}
+
+//         {/* GLB Viewer */}
+//         <div className="mt-8 bg-white/90 p-6 rounded-lg shadow">
+//           <h3 className="text-xl font-semibold mb-4 text-stone-800">GLB Viewer</h3>
+//           <input
+//             type="file"
+//             accept=".glb"
+//             onChange={handleGlbUpload}
+//             className="mb-4 bg-stone-100 p-2 rounded-lg border border-stone-300"
+//           />
+//           {glbFile ? (
+//             <model-viewer
+//               src={URL.createObjectURL(glbFile)}
+//               alt="Preview of the uploaded 3D model"
+//               camera-controls
+//               auto-rotate
+//               shadow-intensity="1"
+//               style={{ width: "100%", height: "500px" }}
+//             ></model-viewer>
+//           ) : (
+//             <p className="text-stone-600">No GLB file selected. Please upload one to preview.</p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ARExperience;
 
 
 
