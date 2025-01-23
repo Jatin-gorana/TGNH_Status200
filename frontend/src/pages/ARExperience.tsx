@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "@google/model-viewer"; // Import the model viewer
+import { Camera, Compass, Cuboid as Cube, Layers } from 'lucide-react';
 
 const ARExperience: React.FC = () => {
   const [imageURL, setImageURL] = useState<string>("");
@@ -11,6 +12,48 @@ const ARExperience: React.FC = () => {
   const [progress, setProgress] = useState<number | null>(null);
   const [glbFile, setGlbFile] = useState<File | null>(null);
   const [pollingIntervalId, setPollingIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [popupVideo, setPopupVideo] = useState(null);
+
+
+  const features = [
+        {
+          icon: <Camera className="text-amber-700" size={24} />,
+          title: '3D Scanning',
+          description: 'Scan artifacts to create detailed 3D models for preservation and study'
+        },
+        {
+          icon: <Cube className="text-amber-700" size={24} />,
+          title: 'Virtual Display',
+          description: 'View artifacts in your space through augmented reality'
+        },
+        {
+          icon: <Compass className="text-amber-700" size={24} />,
+          title: 'Historical Context',
+          description: 'Experience artifacts in their original historical settings'
+        }
+      ];
+    
+      const artifacts = [
+        {
+          video: 'https://www.youtube.com/embed/Bx2S7JpdOp4?si=48RLgUXiJ6H8cN-x',
+          title: 'Taj Mahal',
+          period: 'Classical Period',
+          available: true
+        },
+        {
+          video: 'https://www.youtube.com/embed/v6kGTbNy5H0?si=gf6SBhB9SU1CXP3X',
+          title: 'Ephesus Artifacts',
+          period: 'Imperial Rome',
+          available: true
+        },
+        {
+          video: 'https://www.youtube.com/embed/VtI9debZPGU?si=eZPb0y77AG9q_id4',
+          title: 'Karnak Temple Egypt',
+          period: 'Middle Ages',
+          available: true
+        }
+      ];
+      
 
   const handleUpload = async () => {
     if (!imageURL) {
@@ -177,6 +220,121 @@ const ARExperience: React.FC = () => {
           )}
         </div>
       </div>
+
+
+{/* manas section */}
+      <section className="py-16 bg-stone-50">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <h2 className="text-3xl font-serif text-center text-stone-800 mb-12">
+             Advanced Features
+           </h2>
+           <div className="grid md:grid-cols-3 gap-8">
+             {features.map((feature, index) => (
+              <div key={index} className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-300">
+                <div className="mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-serif text-stone-800 mb-2">{feature.title}</h3>
+                <p className="text-stone-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Available Artifacts */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-serif text-center text-stone-800 mb-12">
+            Available in AR
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8 space-x-10">
+
+          {/* {artifacts.map((artifact, index) => (
+            <div key={index} className="bg-stone-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+              <div className="relative">
+                <iframe
+                  src={artifact.video}
+                  title={artifact.title}
+                  className="w-full h-48"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                {artifact.available && (
+                  <div className="absolute top-4 right-4 bg-amber-700 text-white text-sm px-3 py-1 rounded-full">
+                    AR Ready
+                  </div>
+                )}
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-serif text-stone-800 mb-2">{artifact.title}</h3>
+                <p className="text-stone-600 mb-4">{artifact.period}</p>
+                <button className="w-full bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800 transition-colors">
+                  View in AR
+                </button>
+              </div>
+            </div>
+          ))} */}
+
+
+          {/* Render Artifacts */}
+      {artifacts.map((artifact, index) => (
+        <div
+          key={index}
+          className="bg-stone-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 mb-4"
+        >
+          <div className="relative">
+            <iframe
+              src={artifact.video}
+              title={artifact.title}
+              className="w-full h-48"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+            {artifact.available && (
+              <div className="absolute top-4 right-4 bg-amber-700 text-white text-sm px-3 py-1 rounded-full">
+                AR Ready
+              </div>
+            )}
+          </div>
+          <div className="p-6">
+            <h3 className="text-xl font-serif text-stone-800 mb-2">{artifact.title}</h3>
+            <p className="text-stone-600 mb-4">{artifact.period}</p>
+            <button
+              className="w-full bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800 transition-colors"
+              onClick={() => setPopupVideo(artifact.video)}
+            >
+              View in AR
+            </button>
+          </div>
+        </div>
+      ))}
+
+      {/* Full-Screen Popup */}
+      {popupVideo && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+          <div className="relative w-11/12 md:w-3/4 lg:w-1/2 bg-white rounded-lg overflow-hidden">
+            <button
+              className="absolute top-4 right-4 text-black bg-gray-300 hover:bg-gray-400 rounded-full p-2"
+              onClick={() => setPopupVideo(null)}
+            >
+              ✕
+            </button>
+            <iframe
+              src={popupVideo}
+              title="Full Screen Video"
+              className="w-full h-96"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
