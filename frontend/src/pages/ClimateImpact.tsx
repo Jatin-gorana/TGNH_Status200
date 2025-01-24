@@ -19,9 +19,13 @@ const ClimateImpact: React.FC = () => {
         artifactName,
       });
 
+      console.log(artifactName);
+
       if (response.data.analysis) {
         const cleanedAnalysis = response.data.analysis.replace(/\*/g, "");
         setAnalysis(cleanedAnalysis);
+
+
       } else {
         setError("No analysis available. Please try again.");
       }
@@ -101,7 +105,7 @@ const ClimateImpact: React.FC = () => {
           />
           <button
             onClick={fetchClimateImpact}
-            className="w-full text-white py-2 rounded-lg bg-amber-700 hover:bg-amber-800"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
             disabled={loading || !artifactName.trim()}
           >
             {loading ? "Fetching..." : "Get Climate Impact Analysis"}
@@ -140,6 +144,162 @@ const ClimateImpact: React.FC = () => {
 };
 
 export default ClimateImpact;
+
+
+
+
+
+
+
+
+
+
+
+// nhi chalrha
+
+
+// import React, { useState } from "react";
+// import axios from "axios";
+// import { motion } from "framer-motion";
+// import { FaLeaf, FaExclamationTriangle, FaCheckCircle } from "react-icons/fa";
+
+// const ClimateImpact: React.FC = () => {
+//   const [artifactName, setArtifactName] = useState<string>("");
+//   const [analysis, setAnalysis] = useState<string | null>(null);
+//   const [loading, setLoading] = useState<boolean>(false);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const fetchClimateImpact = async () => {
+//     setLoading(true);
+//     setError(null);
+//     setAnalysis(null);
+
+//     try {
+//       const response = await axios.post("http://localhost:5001/climate-impact", {
+//         artifactName,
+//       });
+
+//       if (response.data.analysis) {
+//         const cleanedAnalysis = response.data.analysis.replace(/\*/g, "");
+//         setAnalysis(cleanedAnalysis);
+//       } else {
+//         setError("No analysis available. Please try again.");
+//       }
+//     } catch (err: any) {
+//       console.error("Error fetching climate impact:", err.message);
+//       setError("Failed to fetch climate impact analysis. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const parseAnalysis = (analysis: string | null) => {
+//     if (!analysis) return [];
+
+//     const sanitizedResult = analysis.replace(/\*/g, "");
+//     const lines = sanitizedResult.split("\n").filter((line) => line.trim() !== "");
+
+//     const sections: { title: string, content: string }[] = [];
+//     let currentTitle = "";
+//     let currentContent = "";
+
+//     lines.forEach((line) => {
+//       if (line.includes(":")) {
+//         // Check if line is a title
+//         const [key, ...valueParts] = line.split(":");
+//         if (currentTitle) {
+//           sections.push({ title: currentTitle, content: currentContent });
+//         }
+//         currentTitle = key.trim();
+//         currentContent = valueParts.join(":").trim();
+//       } else {
+//         currentContent += `\n${line.trim()}`;
+//       }
+//     });
+
+//     // Push the last section
+//     if (currentTitle) {
+//       sections.push({ title: currentTitle, content: currentContent });
+//     }
+
+//     return sections;
+//   };
+
+//   const structuredAnalysis = parseAnalysis(analysis);
+
+//   return (
+//     <div>
+//       {/* Hero Section */}
+//       <section className="bg-stone-900 text-white py-20">
+//         <div className="max-w-7xl mx-auto px-4 pt-20 sm:px-6 lg:px-8">
+//           <div className="text-center">
+//             <h1 className="text-4xl font-serif mb-6 animate__animated animate__fadeIn">
+//               Climate Impact Forecasting
+//             </h1>
+//             <p className="text-xl text-stone-300 mb-12 max-w-2xl mx-auto">
+//               Predict risk and protect cultural artifacts against environmental damage.
+//             </p>
+//           </div>
+//         </div>
+//       </section>
+
+//       <div className="p-6 bg-gray-50 min-h-screen">
+//         <h1 className="text-2xl font-bold mb-4 text-center">Climate Impact Analysis</h1>
+
+//         {/* Input Section */}
+//         <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+//           <label htmlFor="artifactName" className="block font-medium mb-2">
+//             Enter Artifact Name:
+//           </label>
+//           <input
+//             type="text"
+//             id="artifactName"
+//             className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4"
+//             placeholder="e.g., Taj Mahal"
+//             value={artifactName}
+//             onChange={(e) => setArtifactName(e.target.value)}
+//           />
+//           <button
+//             onClick={fetchClimateImpact}
+//             className="w-full text-white py-2 rounded-lg bg-amber-700 hover:bg-amber-800"
+//             disabled={loading || !artifactName.trim()}
+//           >
+//             {loading ? "Fetching..." : "Get Climate Impact Analysis"}
+//           </button>
+//         </div>
+
+//         {/* Error Display */}
+//         {error && (
+//           <div className="mt-4 max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+//             {error}
+//           </div>
+//         )}
+
+//         {/* Analysis Section with Animation */}
+//         <div className="mt-6 max-w-2xl mx-auto bg-gray-100 p-6 rounded-lg shadow-md">
+//           {structuredAnalysis.map((section, index) => (
+//             <motion.div
+//               key={index}
+//               initial={{ opacity: 0, x: -100 }}
+//               animate={{ opacity: 1, x: 0 }}
+//               transition={{ duration: 0.6, delay: index * 0.3 }}
+//               className="mb-6"
+//             >
+//               <h2 className="text-xl font-bold mb-2 text-gray-700 flex items-center">
+//                  {section.title}
+//               </h2>
+//               <div className="p-4 bg-white rounded-lg shadow-sm">
+//                 <p className="whitespace-pre-line">{section.content}</p>
+//               </div>
+//             </motion.div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ClimateImpact;
 
 
 
