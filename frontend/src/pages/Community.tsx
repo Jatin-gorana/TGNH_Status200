@@ -31,6 +31,8 @@ import {
   Gift
 } from 'lucide-react';
 
+import { MapPin, Tag, ExternalLink, Filter, Search, CalendarDays } from 'lucide-react';
+
 import { ethers } from "ethers";
 
 declare global {
@@ -279,112 +281,290 @@ function Community() {
     }));
   };
 
+  // const renderGamification = () => (
+  //   <div className="space-y-8">
+  //     {/* Leaderboard Section */}
+  //     <div className="bg-white p-6 rounded-lg shadow-lg">
+  //       <h3 className="text-xl font-serif text-stone-800 mb-6 flex items-center gap-2">
+  //         <Trophy className="text-amber-700" />
+  //         Top Contributors
+  //       </h3>
+  //       <div className="space-y-4">
+  //         {[
+  //           { name: "Alex Chen", points: 2500, badge: "Master Curator", contributions: 156 },
+  //           { name: "Maria Garcia", points: 2100, badge: "Senior Researcher", contributions: 134 },
+  //           { name: "John Smith", points: 1800, badge: "Expert Contributor", contributions: 98 },
+  //           { name: "Lisa Wang", points: 1650, badge: "Rising Star", contributions: 87 },
+  //           { name: "David Kim", points: 1500, badge: "Dedicated Explorer", contributions: 76 }
+  //         ].map((contributor, index) => (
+  //           <div key={index} className="flex items-center justify-between p-4 bg-stone-50 rounded-lg hover:bg-stone-100 transition-colors">
+  //             <div className="flex items-center gap-4">
+  //               <div className="text-2xl font-bold text-amber-700">#{index + 1}</div>
+  //               <div>
+  //                 <h4 className="font-semibold">{contributor.name}</h4>
+  //                 <div className="flex items-center gap-2">
+  //                   <span className="text-sm text-stone-600">{contributor.badge}</span>
+  //                   <span className="text-sm text-stone-500">•</span>
+  //                   <span className="text-sm text-stone-600">{contributor.contributions} contributions</span>
+  //                 </div>
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center gap-2">
+  //               <Star className="text-amber-700" size={16} />
+  //               <span className="font-semibold">{contributor.points} points</span>
+  //             </div>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     </div>
+
+  //     {/* Achievements Section */}
+  //     <div className="bg-white p-6 rounded-lg shadow-lg">
+  //       <h3 className="text-xl font-serif text-stone-800 mb-6 flex items-center gap-2">
+  //         <Award className="text-amber-700" />
+  //         Recent Achievements
+  //       </h3>
+  //       <div className="grid md:grid-cols-3 gap-4">
+  //         {[
+  //           { title: "First Discovery", description: "Upload your first artifact", icon: <Target />, progress: 100, completed: true },
+  //           { title: "Knowledge Keeper", description: "Contribute to 10 discussions", icon: <BookOpen />, progress: 80, completed: false },
+  //           { title: "Community Leader", description: "Help 5 other members", icon: <Users2 />, progress: 60, completed: false },
+  //           { title: "Master Curator", description: "Curate 50 artifacts", icon: <Star />, progress: 40, completed: false },
+  //           { title: "Digital Pioneer", description: "Create 3D models", icon: <Gem />, progress: 30, completed: false },
+  //           { title: "Global Explorer", description: "Study artifacts from 10 regions", icon: <Globe />, progress: 20, completed: false }
+  //         ].map((achievement, index) => (
+  //           <div key={index} className="flex flex-col p-4 bg-stone-50 rounded-lg border-2 border-transparent hover:border-amber-500 transition-all">
+  //             <div className="flex items-start gap-4 mb-4">
+  //               <div className={`text-amber-700 ${achievement.completed ? 'animate-pulse' : ''}`}>
+  //                 {achievement.icon}
+  //               </div>
+  //               <div>
+  //                 <h4 className="font-semibold">{achievement.title}</h4>
+  //                 <p className="text-sm text-stone-600">{achievement.description}</p>
+  //               </div>
+  //             </div>
+  //             <div className="mt-auto">
+  //               <div className="w-full bg-stone-200 rounded-full h-2">
+  //                 <div 
+  //                   className="bg-amber-700 h-2 rounded-full transition-all duration-500"
+  //                   style={{ width: `${achievement.progress}%` }}
+  //                 />
+  //               </div>
+  //               <p className="text-right text-sm text-stone-600 mt-1">{achievement.progress}%</p>
+  //             </div>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     </div>
+
+  //     {/* Monthly Rewards */}
+  //     <div className="bg-white p-6 rounded-lg shadow-lg">
+  //       <h3 className="text-xl font-serif text-stone-800 mb-6 flex items-center gap-2">
+  //         <Gift className="text-amber-700" />
+  //         Monthly Rewards
+  //       </h3>
+  //       <div className="grid md:grid-cols-3 gap-6">
+  //         {[
+  //           { title: "Bronze", points: "1,000", rewards: ["Limited NFT Badge", "Community Recognition", "Basic Access"] },
+  //           { title: "Silver", points: "5,000", rewards: ["Exclusive NFT Collection", "Mentorship Session", "Advanced Access"] },
+  //           { title: "Gold", points: "10,000", rewards: ["Unique Artifact NFT", "Private Workshop", "Full Platform Access"] }
+  //         ].map((tier, index) => (
+  //           <div key={index} className="bg-stone-50 p-6 rounded-lg border-2 border-transparent hover:border-amber-500 transition-all">
+  //             <Medal className="text-amber-700 mb-4" size={32} />
+  //             <h4 className="text-xl font-semibold mb-2">{tier.title}</h4>
+  //             <p className="text-amber-700 font-bold mb-4">{tier.points} points</p>
+  //             <ul className="space-y-2">
+  //               {tier.rewards.map((reward, rewardIndex) => (
+  //                 <li key={rewardIndex} className="flex items-center gap-2 text-stone-600">
+  //                   <CheckCircle2 className="text-amber-700" size={16} />
+  //                   {reward}
+  //                 </li>
+  //               ))}
+  //             </ul>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+
   const renderGamification = () => (
     <div className="space-y-8">
-      {/* Leaderboard Section */}
+      
+  
+      {/* Search and Filter Section */}
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-serif text-stone-800 mb-6 flex items-center gap-2">
-          <Trophy className="text-amber-700" />
-          Top Contributors
-        </h3>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search events..."
+              className="w-full pl-10 pr-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            />
+          </div>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400" size={20} />
+            <select className="w-full pl-10 pr-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none">
+              <option value="">All Locations</option>
+              <option value="london">London</option>
+              <option value="paris">Paris</option>
+              <option value="new-york">New York</option>
+              <option value="tokyo">Tokyo</option>
+            </select>
+          </div>
+          <div className="relative">
+            <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400" size={20} />
+            <select className="w-full pl-10 pr-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none">
+              <option value="">All Dates</option>
+              <option value="today">Today</option>
+              <option value="this-week">This Week</option>
+              <option value="this-month">This Month</option>
+              <option value="next-month">Next Month</option>
+            </select>
+          </div>
+        </div>
+      </div>
+  
+      {/* Featured Events */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-serif text-stone-800 flex items-center gap-2">
+          <Calendar className="text-amber-700" />
+          Featured Events
+        </h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {[
+            {
+              title: "Ancient Egypt: New Discoveries Exhibition",
+              image: "https://images.unsplash.com/photo-1562679299-266edbefd6d7?ixlib=rb-4.0.3",
+              date: "May 15-30, 2024",
+              location: "British Museum, London",
+              type: "Exhibition",
+              price: "£20",
+              attendees: 1200
+            },
+            {
+              title: "Digital Archaeology Workshop",
+              image: "https://images.unsplash.com/photo-1569263900347-06b1e8c825ab?ixlib=rb-4.0.3",
+              date: "June 5, 2024",
+              location: "Louvre Museum, Paris",
+              type: "Workshop",
+              price: "€45",
+              attendees: 50
+            }
+          ].map((event, index) => (
+            <div key={index} className="group bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="relative h-48">
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute top-4 right-4 bg-amber-700 text-white px-3 py-1 rounded-full text-sm">
+                  {event.type}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-serif text-stone-800 mb-4">{event.title}</h3>
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <Clock size={16} />
+                    <span>{event.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <MapPin size={16} />
+                    <span>{event.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <Tag size={16} />
+                    <span>{event.price}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <Users size={16} />
+                    <span>{event.attendees} attending</span>
+                  </div>
+                </div>
+                <button className="w-full bg-amber-700 text-white px-4 py-2 rounded-lg hover:bg-amber-800 transition-colors flex items-center justify-center gap-2">
+                  Register Now
+                  <ExternalLink size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+  
+      {/* Upcoming Events */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-serif text-stone-800 flex items-center gap-2">
+          <Globe className="text-amber-700" />
+          Upcoming Events
+        </h2>
         <div className="space-y-4">
           {[
-            { name: "Alex Chen", points: 2500, badge: "Master Curator", contributions: 156 },
-            { name: "Maria Garcia", points: 2100, badge: "Senior Researcher", contributions: 134 },
-            { name: "John Smith", points: 1800, badge: "Expert Contributor", contributions: 98 },
-            { name: "Lisa Wang", points: 1650, badge: "Rising Star", contributions: 87 },
-            { name: "David Kim", points: 1500, badge: "Dedicated Explorer", contributions: 76 }
-          ].map((contributor, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-stone-50 rounded-lg hover:bg-stone-100 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="text-2xl font-bold text-amber-700">#{index + 1}</div>
-                <div>
-                  <h4 className="font-semibold">{contributor.name}</h4>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-stone-600">{contributor.badge}</span>
-                    <span className="text-sm text-stone-500">•</span>
-                    <span className="text-sm text-stone-600">{contributor.contributions} contributions</span>
+            {
+              title: "Roman Art Conservation Lecture",
+              date: "June 15, 2024",
+              time: "14:00 - 16:00",
+              location: "Metropolitan Museum of Art, New York",
+              type: "Lecture",
+              price: "$15",
+              speaker: "Dr. Sarah Johnson"
+            },
+            {
+              title: "Asian Ceramics Through Ages",
+              date: "June 20, 2024",
+              time: "10:00 - 18:00",
+              location: "National Museum, Tokyo",
+              type: "Exhibition",
+              price: "¥1,500",
+              curator: "Prof. Tanaka Hiroshi"
+            },
+            {
+              title: "Medieval Manuscripts Workshop",
+              date: "June 25, 2024",
+              time: "11:00 - 15:00",
+              location: "Vatican Museums, Rome",
+              type: "Workshop",
+              price: "€30",
+              instructor: "Dr. Marco Rossi"
+            }
+          ].map((event, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-serif text-stone-800">{event.title}</h3>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <CalendarDays size={16} />
+                    <span>{event.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <Clock size={16} />
+                    <span>{event.time}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <MapPin size={16} />
+                    <span>{event.location}</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <Tag size={16} />
+                    <span>{event.price}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-stone-600">
+                    <Users size={16} />
+                    <span>{event.attendees} attending</span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Star className="text-amber-700" size={16} />
-                <span className="font-semibold">{contributor.points} points</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Achievements Section */}
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-serif text-stone-800 mb-6 flex items-center gap-2">
-          <Award className="text-amber-700" />
-          Recent Achievements
-        </h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { title: "First Discovery", description: "Upload your first artifact", icon: <Target />, progress: 100, completed: true },
-            { title: "Knowledge Keeper", description: "Contribute to 10 discussions", icon: <BookOpen />, progress: 80, completed: false },
-            { title: "Community Leader", description: "Help 5 other members", icon: <Users2 />, progress: 60, completed: false },
-            { title: "Master Curator", description: "Curate 50 artifacts", icon: <Star />, progress: 40, completed: false },
-            { title: "Digital Pioneer", description: "Create 3D models", icon: <Gem />, progress: 30, completed: false },
-            { title: "Global Explorer", description: "Study artifacts from 10 regions", icon: <Globe />, progress: 20, completed: false }
-          ].map((achievement, index) => (
-            <div key={index} className="flex flex-col p-4 bg-stone-50 rounded-lg border-2 border-transparent hover:border-amber-500 transition-all">
-              <div className="flex items-start gap-4 mb-4">
-                <div className={`text-amber-700 ${achievement.completed ? 'animate-pulse' : ''}`}>
-                  {achievement.icon}
-                </div>
-                <div>
-                  <h4 className="font-semibold">{achievement.title}</h4>
-                  <p className="text-sm text-stone-600">{achievement.description}</p>
-                </div>
-              </div>
-              <div className="mt-auto">
-                <div className="w-full bg-stone-200 rounded-full h-2">
-                  <div 
-                    className="bg-amber-700 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${achievement.progress}%` }}
-                  />
-                </div>
-                <p className="text-right text-sm text-stone-600 mt-1">{achievement.progress}%</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Monthly Rewards */}
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-serif text-stone-800 mb-6 flex items-center gap-2">
-          <Gift className="text-amber-700" />
-          Monthly Rewards
-        </h3>
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { title: "Bronze", points: "1,000", rewards: ["Limited NFT Badge", "Community Recognition", "Basic Access"] },
-            { title: "Silver", points: "5,000", rewards: ["Exclusive NFT Collection", "Mentorship Session", "Advanced Access"] },
-            { title: "Gold", points: "10,000", rewards: ["Unique Artifact NFT", "Private Workshop", "Full Platform Access"] }
-          ].map((tier, index) => (
-            <div key={index} className="bg-stone-50 p-6 rounded-lg border-2 border-transparent hover:border-amber-500 transition-all">
-              <Medal className="text-amber-700 mb-4" size={32} />
-              <h4 className="text-xl font-semibold mb-2">{tier.title}</h4>
-              <p className="text-amber-700 font-bold mb-4">{tier.points} points</p>
-              <ul className="space-y-2">
-                {tier.rewards.map((reward, rewardIndex) => (
-                  <li key={rewardIndex} className="flex items-center gap-2 text-stone-600">
-                    <CheckCircle2 className="text-amber-700" size={16} />
-                    {reward}
-                  </li>
-                ))}
-              </ul>
             </div>
           ))}
         </div>
       </div>
     </div>
   );
+  
 
   const renderMentorship = () => (
     <div className="space-y-8">
@@ -971,7 +1151,7 @@ function Community() {
               {[
                 { id: 'collaboration', icon: <Users size={20} />, label: 'Collaboration' },
                 { id: 'blockchain', icon: <Blocks size={20} />, label: 'Blockchain' },
-                { id: 'gamification', icon: <Trophy size={20} />, label: 'Rewards' },
+                { id: 'gamification', icon: <MapPin size={20} />, label: 'Events' },
                 { id: 'mentorship', icon: <GraduationCap size={20} />, label: 'Mentorship' }
               ].map((tab) => (
                 <button
