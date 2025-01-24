@@ -1,7 +1,11 @@
+// working perfect
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "@google/model-viewer"; // Import the model viewer
-import { Camera, Compass, Cuboid as Cube, Layers } from 'lucide-react';
+import { Camera, Compass, Cuboid as Cube, Layers, Upload } from 'lucide-react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const ARExperience: React.FC = () => {
   const [imageURL, setImageURL] = useState<string>("");
@@ -137,7 +141,7 @@ const ARExperience: React.FC = () => {
         <div className="mb-6 px-10">
           <input
             type="text"
-            className="border border-stone-300 p-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700 transition duration-300"
+            className="border border-stone-300 p-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700 transition duration-300 lg:w-[50%]"
             placeholder="Enter image URL"
             value={imageURL}
             onChange={(e) => setImageURL(e.target.value)}
@@ -153,24 +157,37 @@ const ARExperience: React.FC = () => {
             Upload Image
           </button>
 
+          
+
           {taskId && (
             <button
-              className="bg-stone-800 hover:bg-stone-900 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+              className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
               onClick={fetchResult}
               disabled={loading}
             >
-              Fetch 3D Model
+              Generate 3D Model
             </button>
           )}
+
+{imageURL && (
+  <div className="mb-6 px-10">
+    <img
+      src={imageURL}
+      alt="Preview"
+      className="h-32 w-32 object-contain rounded-lg border border-stone-300 shadow-lg"
+    />
+  </div>
+)}
         </div>
 
-        {progress !== null && (
+        {progress !== null && progress<100 &&(
           <div className="mb-6">
             <div className="h-4 bg-stone-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-700 transition-all"
-                style={{ width: `${progress}%` }}
-              ></div>
+            {progress !== null && (
+  <div className="mb-6">
+    <ProgressBar animated variant="warning" now={progress} />
+  </div>
+)}
             </div>
             <p className="text-xl text-stone-600 mt-2 text-center">
               Progress: {progress}% {progress === 100 && "✅"}
@@ -183,6 +200,7 @@ const ARExperience: React.FC = () => {
         {modelData && (
           <div className="mt-6 bg-stone-100 p-6 rounded-lg shadow-xl">
             <h2 className="text-3xl font-semibold mb-4 text-stone-800">3D Model Links</h2>
+            <h2 className="text-l font-semibold mb-4 text-stone-800">Download below generated glb file and upload in GLB viewer</h2>
             <ul className="list-disc ml-6 space-y-2">
               <li>
                 <a
@@ -190,7 +208,7 @@ const ARExperience: React.FC = () => {
                   download
                   className="text-amber-700 underline hover:text-amber-800 transition duration-300"
                 >
-                  Download 3D GLB File
+                  Download 3D GLB File 
                 </a>
               </li>
             </ul>
@@ -200,12 +218,30 @@ const ARExperience: React.FC = () => {
         {/* GLB Viewer */}
         <div className="mt-10 bg-white p-8 rounded-lg shadow-lg">
           <h3 className="text-2xl font-semibold mb-6 text-stone-800">GLB Model Viewer</h3>
-          <input
+
+
+          {/* <input
             type="file"
             accept=".glb"
             onChange={handleGlbUpload}
             className="mb-6 bg-stone-100 p-3 rounded-lg border border-stone-300 hover:bg-stone-200 transition duration-300"
-          />
+          /> */}
+
+          <label className="block cursor-pointer">
+                    <span className="bg-amber-700 text-white px-6 py-2 rounded-lg flex items-center justify-center hover:bg-amber-800 transition-colors w-[20%]">
+                      <Upload className="mr-2" />
+                      Upload GLB file
+                    
+                    <input
+                      type="file"
+                      accept=".glb"
+                      onChange={handleGlbUpload}
+                      className="hidden"
+                    />
+                    </span>
+                  </label>
+
+
           {glbFile ? (
             <model-viewer
               src={URL.createObjectURL(glbFile)}

@@ -105,7 +105,7 @@ const ClimateImpact: React.FC = () => {
           />
           <button
             onClick={fetchClimateImpact}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+            className="w-full text-white py-2 rounded-lg bg-amber-700 hover:bg-amber-800"
             disabled={loading || !artifactName.trim()}
           >
             {loading ? "Fetching..." : "Get Climate Impact Analysis"}

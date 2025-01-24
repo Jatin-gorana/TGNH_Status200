@@ -1,3 +1,4 @@
+// working navbar but double line
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -41,7 +42,7 @@ function Navbar() {
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-white/90 backdrop-blur-md shadow-md' : isHomePage ? 'bg-transparent' : 'bg-white shadow-md'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-1">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
             <Landmark className="text-amber-700" size={28} />
@@ -51,7 +52,7 @@ function Navbar() {
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8 mx-auto">
             {navItems.map((item, index) => (
               <Link
                 key={index}
@@ -68,7 +69,7 @@ function Navbar() {
             ))}
 
             {user ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 pl-10">
                 <span className={`flex items-center gap-2 ${
                   isHomePage && scrollY <= 50 ? 'text-white' : 'text-stone-600'
                 }`}>
