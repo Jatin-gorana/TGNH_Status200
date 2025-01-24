@@ -32,7 +32,7 @@ function Home() {
             backgroundImage: 'url("https://png.pngtree.com/background/20250104/original/pngtree-artifacts-and-the-ruins-of-greece-picture-image_15514197.jpg")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'brightness(0.7)',
+            filter: 'brightness(0.4)',
             transform: `translateY(${scrollY * 0.5}px)`,
           }}
         />

@@ -185,7 +185,7 @@ function Community() {
 
     const newPostObj: Post = {
       id: posts.length + 1,
-      author: "Current User",
+      author: "Jatin",
       avatar: "https://plus.unsplash.com/premium_photo-1682096073176-7cd124ea0a7f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8aW5kaWFuJTIwcGVvcGxlfGVufDB8fDB8fHww",
       content: newPost,
       likes: 0,
