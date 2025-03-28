@@ -7,6 +7,7 @@ import ARExperience from './pages/ARExperience';
 import ClimateImpact from './pages/ClimateImpact';
 import CulturalMapping from './pages/CulturalMapping';
 import Restoration from './pages/Restoration';
+import Community from './pages/Community';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/climate-impact" element={<ClimateImpact />} />
         <Route path="/restoration" element={<Restoration />} />
         <Route path="/cultural-mapping" element={<CulturalMapping />} />
+        <Route path="/community" element={<Community />} />
       </Routes>
     </>
   );
