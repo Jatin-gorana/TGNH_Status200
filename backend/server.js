@@ -21,7 +21,7 @@ const MESHY_API_KEY = "msy_kTTQH6lwWTUX16hElmujRxlIx51ywgouliPw";
 const MESHY_API_ENDPOINT = "https://api.meshy.ai/openapi/v1/image-to-3d";
 const GOOGLE_GEN_AI_KEY = "AIzaSyAF7Hu-wUVF-NPNZV2jNPysCCbAi3qv6mk";
 // const PHOTAI_API_KEY = "6791e1061f797f5170b9c2e8_0b7f38af316059a31b98_apyhitools"; old key
-const PHOTAI_API_KEY = "67dd5c15b45809d0a3a33be7_c7ed3717da99f3d47ccc_apyhitools";  
+const PHOTAI_API_KEY = "67e6e0dfb7157cd0baf5788a_fb81990f2f7115c4a353_apyhitools";  
 const PHOTAI_API_URL = "https://prodapi.phot.ai/external/api/v3/user_activity/old-photos-restore-2k";
 
 // Cloudinary Configuration
