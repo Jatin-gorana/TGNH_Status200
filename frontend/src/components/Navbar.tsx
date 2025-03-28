@@ -31,11 +31,6 @@ function Navbar() {
 
   const navItems = [
     { icon: <Landmark size={20} />, text: 'Discover Artifacts', path: '/discover-artifacts' },
-    { icon: <Camera size={20} />, text: 'AR Experience', path: '/ar-experience' },
-    { icon: <Cloud size={20} />, text: 'Climate Impact', path: '/climate-impact' },
-    { icon: <History size={20} />, text: 'Restoration', path: '/restoration' },
-    { icon: <Map size={20} />, text: 'Cultural Mapping', path: '/cultural-mapping' },
-    { icon: <Users size={20} />, text: 'Community', path: '/community' },
   ];
 
   const isHomePage = location.pathname === '/';

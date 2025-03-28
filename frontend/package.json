@@ -16,6 +16,7 @@
     "@react-three/gltfjsx": "^4.3.4",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
+    "convai-sdk": "^0.9.0",
     "ethers": "^6.13.5",
     "framer-motion": "^12.0.3",
     "lucide-react": "^0.344.0",
