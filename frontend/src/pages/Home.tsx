@@ -135,7 +135,7 @@ function Home() {
             <div>
               <h4 className="text-white font-serif mb-4">Contact</h4>
               <p>info@culturalai.com</p>
-              <p>+1 (555) 123-4567</p>
+              <p>+919876545678</p>
             </div>
           </div>
           <div className="border-t border-stone-800 mt-8 pt-8 text-center">
