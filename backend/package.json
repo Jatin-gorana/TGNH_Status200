@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node serverfinal.js"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "@gradio/client": "^1.13.1",

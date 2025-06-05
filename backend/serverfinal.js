@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const cloudinary = require("cloudinary").v2;
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
 
 const app = express();
 const PORT = 5000;
@@ -16,29 +17,32 @@ app.use(express.json());
 app.use(cors());
 const upload = multer({ dest: "uploads/" });
 
-// Environment Variables (replace with your actual API keys)
-const MESHY_API_KEY = "msy_kTTQH6lwWTUX16hElmujRxlIx51ywgouliPw";
+// Environment Variables (from .env)
+const MESHY_API_KEY = process.env.MESHY_API_KEY;
 const MESHY_API_ENDPOINT = "https://api.meshy.ai/openapi/v1/image-to-3d";
-const GOOGLE_GEN_AI_KEY = "AIzaSyAF7Hu-wUVF-NPNZV2jNPysCCbAi3qv6mk";
-// const PHOTAI_API_KEY = "6791e1061f797f5170b9c2e8_0b7f38af316059a31b98_apyhitools"; old key
-const PHOTAI_API_KEY = "67e6e0dfb7157cd0baf5788a_fb81990f2f7115c4a353_apyhitools";  
+const GOOGLE_GEN_AI_KEY = process.env.GOOGLE_GEN_AI_KEY;
+const PHOTAI_API_KEY = process.env.PHOTAI_API_KEY;
 const PHOTAI_API_URL = "https://prodapi.phot.ai/external/api/v3/user_activity/old-photos-restore-2k";
 
 // Cloudinary Configuration
 cloudinary.config({
-  cloud_name: "dejmb5qcq",
-  api_key: "216875435642652",
-  api_secret: "bTfRpMEb3Pjg6iEi4ApR1IZUYCk",
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 
 // Google Generative AI Initialization
 const genAI = new GoogleGenerativeAI(GOOGLE_GEN_AI_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+const generationConfig = {
+  temperature: 0.7,
+  maxOutputTokens: 800,
+};
 
 // Route: Artifact Analysis
 app.post("/analyze", upload.single("image"), async (req, res) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
     const imagePath = path.join(__dirname, req.file.path);
     const image = {
       inlineData: {
@@ -65,21 +69,17 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 });
 
 // Route: 3D Model Conversion
-// Route: 3D Model Conversion (updated to handle both image URL and file upload)
 app.post("/api/convert", upload.single("image"), async (req, res) => {
   let imageUrl = req.body.image_url;
   let imageFile = req.file;
 
-  // If no image URL is provided, use the uploaded image
   if (!imageUrl && !imageFile) {
     return res.status(400).json({ error: "Image URL or image file is required" });
   }
 
-  // If an image URL is provided, use it
   if (imageUrl) {
     imageUrl = imageUrl;
   } else if (imageFile) {
-    // Upload image file to Cloudinary
     try {
       const cloudinaryResponse = await cloudinary.uploader.upload(imageFile.path, {
         folder: "image-uploads",
@@ -108,7 +108,6 @@ app.post("/api/convert", upload.single("image"), async (req, res) => {
   }
 });
 
-
 // Route: Fetch 3D Model Result
 app.get("/api/result/:taskId", async (req, res) => {
   const { taskId } = req.params;
@@ -128,7 +127,6 @@ app.post("/reconstruct", upload.single("image"), async (req, res) => {
   try {
     const { color_flag } = req.body;
 
-    // Upload image to Cloudinary
     const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
       folder: "reconstructed_images",
     });
@@ -153,10 +151,29 @@ app.post("/reconstruct", upload.single("image"), async (req, res) => {
   }
 });
 
+// Route: Climate Impact Analysis
+app.post("/climate-impact", async (req, res) => {
+  try {
+    const { artifactName } = req.body;
+
+    if (!artifactName) {
+      return res.status(400).json({ error: "Artifact name is required" });
+    }
+
+    const prompt = `For ${artifactName}, fetch the climatic conditions of the artifact's location, including the following: temperature, humidity, UV exposure, and air quality. Perform a climate impact analysis based on these conditions, assess the risk to the artifact's preservation, and provide preventive care guidelines.`;
+
+    const response = await model.generateContent([
+      { text: prompt },
+    ]);
+
+    res.json({ analysis: response.response.text() });
+  } catch (error) {
+    console.error("Error in /climate-impact endpoint:", error.message);
+    res.status(500).json({ error: "Failed to fetch climate impact analysis." });
+  }
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-
-
