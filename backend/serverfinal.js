@@ -23,6 +23,7 @@ const MESHY_API_ENDPOINT = "https://api.meshy.ai/openapi/v1/image-to-3d";
 const GOOGLE_GEN_AI_KEY = process.env.GOOGLE_GEN_AI_KEY;
 const PHOTAI_API_KEY = process.env.PHOTAI_API_KEY;
 const PHOTAI_API_URL = "https://prodapi.phot.ai/external/api/v3/user_activity/old-photos-restore-2k";
+const backendUrl = process.env.BACKEND_URL;
 
 // Cloudinary Configuration
 cloudinary.config({
@@ -41,7 +42,7 @@ const generationConfig = {
 };
 
 // Route: Artifact Analysis
-app.post("/analyze", upload.single("image"), async (req, res) => {
+app.post(`${backendUrl}/analyze`, upload.single("image"), async (req, res) => {
   try {
     const imagePath = path.join(__dirname, req.file.path);
     const image = {
@@ -69,7 +70,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 });
 
 // Route: 3D Model Conversion
-app.post("/api/convert", upload.single("image"), async (req, res) => {
+app.post(`${backendUrl}/api/convert`, upload.single("image"), async (req, res) => {
   let imageUrl = req.body.image_url;
   let imageFile = req.file;
 
@@ -109,7 +110,7 @@ app.post("/api/convert", upload.single("image"), async (req, res) => {
 });
 
 // Route: Fetch 3D Model Result
-app.get("/api/result/:taskId", async (req, res) => {
+app.get(`${backendUrl}/api/result/:taskId`, async (req, res) => {
   const { taskId } = req.params;
 
   const headers = { Authorization: `Bearer ${MESHY_API_KEY}` };
@@ -123,7 +124,7 @@ app.get("/api/result/:taskId", async (req, res) => {
 });
 
 // Route: Image Reconstruction
-app.post("/reconstruct", upload.single("image"), async (req, res) => {
+app.post(`${backendUrl}/reconstruct`, upload.single("image"), async (req, res) => {
   try {
     const { color_flag } = req.body;
 
@@ -152,7 +153,7 @@ app.post("/reconstruct", upload.single("image"), async (req, res) => {
 });
 
 // Route: Climate Impact Analysis
-app.post("/climate-impact", async (req, res) => {
+app.post(`${backendUrl}/climate-impact`, async (req, res) => {
   try {
     const { artifactName } = req.body;
 

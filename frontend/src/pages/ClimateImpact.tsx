@@ -6,6 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart
 import { ReactCompareSlider } from "react-compare-slider";
 import tajmahalafter50 from '../assets/tajmahalafter50years.jpg'
 
+
 interface CaseStudy {
   name: string;
   currentImage: string;
@@ -68,6 +69,8 @@ const ClimateImpact: React.FC = () => {
     },
   ];
 
+  const apiUrl = import.meta.env.VITE_BACKEND_URL;
+  
   const fetchClimateImpact = async () => {
     setLoading(true);
     setError(null);
@@ -75,7 +78,7 @@ const ClimateImpact: React.FC = () => {
     setSimulatedData(null);
 
     try {
-      const response = await axios.post("http://localhost:5000/climate-impact", {
+      const response = await axios.post(`${apiUrl}/climate-impact`, {
         artifactName,
       });
 

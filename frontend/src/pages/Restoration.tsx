@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+
 const Reconstruction: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [reconstructedImageUrl, setReconstructedImageUrl] = useState<string | null>(null);
@@ -17,6 +18,8 @@ const Reconstruction: React.FC = () => {
     }
   };
 
+  const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
   const handleSubmit = async () => {
     if (!image) {
       alert("Please upload an image first!");
@@ -29,7 +32,7 @@ const Reconstruction: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/reconstruct", formData, {
+      const response = await axios.post(`${apiUrl}/reconstruct`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

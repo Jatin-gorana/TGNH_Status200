@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, useRef } from "react";
 import { FaInfoCircle, FaUpload, FaSpinner, FaTrash, FaCamera } from "react-icons/fa";
 
+
 const DiscoverArtifact: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,6 +48,8 @@ const DiscoverArtifact: React.FC = () => {
     setCapturing(false);
   };
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
   const handleAnalyze = async () => {
     if (!image) {
       alert("Please upload or capture an image first.");
@@ -59,7 +62,7 @@ const DiscoverArtifact: React.FC = () => {
     formData.append("image", image);
   
     try {
-      const response = await fetch("http://localhost:5000/analyze", {
+      const response = await fetch(`${apiUrl}/analyze`, {
         method: "POST",
         body: formData,
       });
