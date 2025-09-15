@@ -148,27 +148,27 @@ app.post("/api/convert", upload.single("image"), async (req, res) => {
   }
 });
 
-// Image Reconstruction
-app.post("/reconstruct", upload.single("image"), async (req, res) => {
-  try {
-    const { color_flag } = req.body;
-    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
-      folder: "reconstructed_images",
-    });
+// Image Reconstruction - PhotAI
+// app.post("/reconstruct", upload.single("image"), async (req, res) => {
+//   try {
+//     const { color_flag } = req.body;
+//     const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
+//       folder: "reconstructed_images",
+//     });
 
-    const publicUrl = cloudinaryResponse.secure_url;
-    const data = { source_url: publicUrl, color_flag: color_flag === "true" };
-    const headers = { "x-api-key": PHOTAI_API_KEY, "Content-Type": "application/json" };
+//     const publicUrl = cloudinaryResponse.secure_url;
+//     const data = { source_url: publicUrl, color_flag: color_flag === "true" };
+//     const headers = { "x-api-key": PHOTAI_API_KEY, "Content-Type": "application/json" };
 
-    const response = await axios.post(PHOTAI_API_URL, data, { headers });
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Error reconstructing image:", error.response?.data || error.message);
-    res.status(500).json({ error: error.response?.data || "Failed to reconstruct the image" });
-  }
-});
+//     const response = await axios.post(PHOTAI_API_URL, data, { headers });
+//     res.status(200).json(response.data);
+//   } catch (error) {
+//     console.error("Error reconstructing image:", error.response?.data || error.message);
+//     res.status(500).json({ error: error.response?.data || "Failed to reconstruct the image" });
+//   }
+// });
 
-// Update the reconstruction route
+// Comet API - Gemini 2.5 for Image Restoration
 app.post("/reconstruct", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
