@@ -31,6 +31,11 @@ const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
 const STABILITY_API_ENDPOINT =
   "https://api.stability.ai/v2beta/3d/stable-fast-3d";
 
+// Add Comet API constants
+const COMET_API_KEY = process.env.COMET_API_KEY;
+const COMET_API_ENDPOINT = 'https://api.cometapi.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent';
+
+
 // Cloudinary Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -160,6 +165,109 @@ app.post("/reconstruct", upload.single("image"), async (req, res) => {
   } catch (error) {
     console.error("Error reconstructing image:", error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || "Failed to reconstruct the image" });
+  }
+});
+
+// Update the reconstruction route
+app.post("/reconstruct", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No image file uploaded" });
+    }
+
+    // Read and encode the image
+    const imageData = fs.readFileSync(req.file.path);
+    const base64Image = imageData.toString('base64');
+    const mimeType = req.file.mimetype || 'image/jpeg';
+
+    // Prepare the request body
+    const requestBody = {
+      contents: [{
+        role: "user",
+        parts: [
+          {
+            text: "Restore this historical artifact image. Remove all damage, deterioration, and aging effects while maintaining historical accuracy and authenticity. Enhance quality and preserve original details."
+          },
+          {
+            inline_data: {
+              mime_type: mimeType,
+              data: base64Image
+            }
+          }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.4,
+        topP: 0.8,
+        responseModalities: ["TEXT", "IMAGE"]
+      }
+    };
+
+    console.log('Sending request to Comet API...');
+    
+    // Make request to Comet API with proper Bearer token
+    const response = await axios.post(COMET_API_ENDPOINT, requestBody, {
+      headers: {
+        'Authorization': `Bearer ${COMET_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'stability-client-id': 'cultural-web-restoration'
+      }
+    });
+
+    // Log full response for debugging
+    console.log('Comet API Response:', {
+      status: response.status,
+      headers: response.headers,
+      data: response.data
+    });
+
+    if (response.status === 200 && response.data?.candidates?.[0]?.content?.parts) {
+      const parts = response.data.candidates[0].content.parts;
+      // Find the image part in the response
+      const imagePart = parts.find(part => 
+        part.inlineData?.mimeType?.startsWith('image/') ||
+        part.inlineData?.mime_type?.startsWith('image/')
+      );
+
+      if (imagePart && (imagePart.inlineData?.data || imagePart.inline_data?.data)) {
+        const imageBase64 = imagePart.inlineData?.data || imagePart.inline_data?.data;
+        const outputPath = path.join(__dirname, 'outputs', `restored_${Date.now()}.jpg`);
+        fs.writeFileSync(outputPath, Buffer.from(imageBase64, 'base64'));
+        
+        return res.json({
+          success: true,
+          restoredImageUrl: `/outputs/${path.basename(outputPath)}`,
+          message: "Image restored successfully with Gemini"
+        });
+      } else {
+        throw new Error("No image data found in response parts");
+      }
+    } else {
+      throw new Error(`Invalid response format: ${JSON.stringify(response.data)}`);
+    }
+
+  } catch (error) {
+    console.error("Restoration error:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
+    res.status(500).json({ 
+      success: false,
+      error: error.message || "Failed to restore image",
+      details: error.response?.data || error.stack
+    });
+  } finally {
+    // Clean up uploaded file
+    if (req.file?.path) {
+      try {
+        await unlinkAsync(req.file.path);
+      } catch (err) {
+        console.error("Error cleaning up uploaded file:", err);
+      }
+    }
   }
 });
 
