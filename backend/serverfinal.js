@@ -32,6 +32,10 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 
+const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
+const STABILITY_API_ENDPOINT =
+  "https://api.stability.ai/v2beta/3d/stable-fast-3d";
+
 // Google Generative AI Initialization
 const genAI = new GoogleGenerativeAI(GOOGLE_GEN_AI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -40,6 +44,69 @@ const generationConfig = {
   temperature: 0.7,
   maxOutputTokens: 800,
 };
+
+const unlinkAsync = promisify(fs.unlink);
+
+async function convertWithStabilityAPI(imagePath) {
+  try {
+    if (!STABILITY_API_KEY) {
+      throw new Error("Stability API key is not configured");
+    }
+
+    if (!imagePath || !fs.existsSync(imagePath)) {
+      throw new Error("Invalid image path provided");
+    }
+
+    console.log(
+      "Using Stability API Key:",
+      STABILITY_API_KEY.substring(0, 10) + "..."
+    );
+
+    const outputDir = path.join(__dirname, "outputs");
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    const outputPath = path.join(outputDir, `stable_${Date.now()}.glb`);
+
+    const formData = new FormData();
+    formData.append("image", fs.createReadStream(imagePath));
+    formData.append("texture_resolution", "2048");
+    formData.append("foreground_ratio", "0.85");
+    formData.append("remesh", "quad");
+
+    const response = await axios.post(STABILITY_API_ENDPOINT, formData, {
+      validateStatus: undefined,
+      responseType: "arraybuffer",
+      headers: {
+        Authorization: `Bearer ${STABILITY_API_KEY}`,
+        ...formData.getHeaders(),
+        "stability-client-id": "cultural-web-app",
+      },
+    });
+
+    if (response.status === 200) {
+      fs.writeFileSync(outputPath, Buffer.from(response.data));
+      return {
+        success: true,
+        glb_url: `/outputs/${path.basename(outputPath)}`,
+        message: "3D model generated successfully using Stability AI",
+      };
+    } else {
+      const errorMessage = Buffer.from(response.data).toString();
+      throw new Error(`API Error ${response.status}: ${errorMessage}`);
+    }
+  } catch (error) {
+    console.error("Stability API conversion error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data
+        ? Buffer.from(error.response.data).toString()
+        : null,
+    });
+    return {
+      success: false,
+      error: error.message || "Failed to process the conversion request",
+    };
+  }
+}
 
 // Route: Artifact Analysis
 app.post(`${backendUrl}/analyze`, upload.single("image"), async (req, res) => {
@@ -70,56 +137,21 @@ app.post(`${backendUrl}/analyze`, upload.single("image"), async (req, res) => {
 });
 
 // Route: 3D Model Conversion
-app.post(`${backendUrl}/api/convert`, upload.single("image"), async (req, res) => {
-  let imageUrl = req.body.image_url;
-  let imageFile = req.file;
-
-  if (!imageUrl && !imageFile) {
-    return res.status(400).json({ error: "Image URL or image file is required" });
-  }
-
-  if (imageUrl) {
-    imageUrl = imageUrl;
-  } else if (imageFile) {
-    try {
-      const cloudinaryResponse = await cloudinary.uploader.upload(imageFile.path, {
-        folder: "image-uploads",
-      });
-      imageUrl = cloudinaryResponse.secure_url;
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      return res.status(500).json({ error: "Failed to upload image file" });
+app.post(`${backendUrl}/convert2dto3d`, upload.single("image"), async (req, res) => {
+  try {
+    const result = await convertWithStabilityAPI(req.file.path);
+    res.json(result);
+  } catch (error) {
+    console.error("Error in Stability 3D conversion:", error);
+    res.status(500).json({ error: "Failed to convert to 3D model" });
+  } finally {
+    if (req.file?.path) {
+      try {
+        await unlinkAsync(req.file.path);
+      } catch (err) {
+        console.error("Error cleaning up uploaded file:", err);
+      }
     }
-  }
-
-  const headers = { Authorization: `Bearer ${MESHY_API_KEY}` };
-  const payload = {
-    image_url: imageUrl,
-    enable_pbr: true,
-    should_remesh: true,
-    should_texture: true,
-  };
-
-  try {
-    const response = await axios.post(MESHY_API_ENDPOINT, payload, { headers });
-    res.json({ taskId: response.data.result });
-  } catch (error) {
-    console.error("Error initiating conversion:", error.message);
-    res.status(500).json({ error: "Failed to initiate 3D model conversion" });
-  }
-});
-
-// Route: Fetch 3D Model Result
-app.get(`${backendUrl}/api/result/:taskId`, async (req, res) => {
-  const { taskId } = req.params;
-
-  const headers = { Authorization: `Bearer ${MESHY_API_KEY}` };
-  try {
-    const response = await axios.get(`${MESHY_API_ENDPOINT}/${taskId}`, { headers });
-    res.json(response.data);
-  } catch (error) {
-    console.error("Error fetching result:", error.message);
-    res.status(500).json({ error: "Failed to fetch 3D model result" });
   }
 });
 
@@ -173,6 +205,13 @@ app.post(`${backendUrl}/climate-impact`, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch climate impact analysis." });
   }
 });
+
+
+// Create outputs directory if it doesn't exist
+const outputDir = path.join(__dirname, "outputs");
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 
 // Start Server
 app.listen(PORT, () => {
