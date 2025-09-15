@@ -9,6 +9,13 @@ const cloudinary = require("cloudinary").v2;
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
 const { promisify } = require("util"); 
+import FormData from "form-data";
+
+// Initialize ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
 
 const app = express();
 const PORT = 5000;
@@ -20,8 +27,6 @@ app.use("/outputs", express.static(path.join(__dirname, "outputs")));
 const upload = multer({ dest: "uploads/" });
 
 // Environment Variables (from .env)
-const MESHY_API_KEY = process.env.MESHY_API_KEY;
-const MESHY_API_ENDPOINT = "https://api.meshy.ai/openapi/v1/image-to-3d";
 const GOOGLE_GEN_AI_KEY = process.env.GOOGLE_GEN_AI_KEY;
 const PHOTAI_API_KEY = process.env.PHOTAI_API_KEY;
 const PHOTAI_API_URL = "https://prodapi.phot.ai/external/api/v3/user_activity/old-photos-restore-2k";
@@ -52,44 +57,36 @@ const unlinkAsync = promisify(fs.unlink);
 async function convertWithStabilityAPI(imagePath) {
   try {
     if (!STABILITY_API_KEY) {
-      throw new Error("Stability API key is not configured");
+      throw new Error('Stability API key is not configured');
     }
-
     if (!imagePath || !fs.existsSync(imagePath)) {
-      throw new Error("Invalid image path provided");
+      throw new Error('Invalid image path provided');
     }
-
-    console.log(
-      "Using Stability API Key:",
-      STABILITY_API_KEY.substring(0, 10) + "..."
-    );
-
+    console.log('Using Stability API Key:', STABILITY_API_KEY.substring(0, 10) + '...');
     const outputDir = path.join(__dirname, "outputs");
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
     const outputPath = path.join(outputDir, `stable_${Date.now()}.glb`);
-
     const formData = new FormData();
-    formData.append("image", fs.createReadStream(imagePath));
-    formData.append("texture_resolution", "2048");
-    formData.append("foreground_ratio", "0.85");
-    formData.append("remesh", "quad");
-
+    formData.append('image', fs.createReadStream(imagePath));
+    formData.append('texture_resolution', '2048');
+    formData.append('foreground_ratio', '0.85');
+    formData.append('remesh', 'quad');
     const response = await axios.post(STABILITY_API_ENDPOINT, formData, {
       validateStatus: undefined,
-      responseType: "arraybuffer",
+      responseType: 'arraybuffer',
       headers: {
         Authorization: `Bearer ${STABILITY_API_KEY}`,
-        ...formData.getHeaders(),
-        "stability-client-id": "cultural-web-app",
-      },
+        'Content-Type': 'multipart/form-data',
+        'stability-client-id': 'cultural-web-app'
+      }
     });
-
     if (response.status === 200) {
       fs.writeFileSync(outputPath, Buffer.from(response.data));
       return {
         success: true,
         glb_url: `/outputs/${path.basename(outputPath)}`,
-        message: "3D model generated successfully using Stability AI",
+        outputPath,
+        message: "3D model generated successfully using Stability AI"
       };
     } else {
       const errorMessage = Buffer.from(response.data).toString();
@@ -99,13 +96,11 @@ async function convertWithStabilityAPI(imagePath) {
     console.error("Stability API conversion error:", {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
-        ? Buffer.from(error.response.data).toString()
-        : null,
+      data: error.response?.data ? Buffer.from(error.response.data).toString() : null
     });
     return {
       success: false,
-      error: error.message || "Failed to process the conversion request",
+      error: error.message || 'Failed to process the conversion request'
     };
   }
 }
@@ -139,14 +134,15 @@ app.post(`${backendUrl}/analyze`, upload.single("image"), async (req, res) => {
 });
 
 // Route: 3D Model Conversion
-app.post(`${backendUrl}/convert2dto3d`, upload.single("image"), async (req, res) => {
+app.post("/api/convert", upload.single("image"), async (req, res) => {
   try {
     const result = await convertWithStabilityAPI(req.file.path);
     res.json(result);
   } catch (error) {
-    console.error("Error in Stability 3D conversion:", error);
+    console.error("Error in 3D conversion:", error);
     res.status(500).json({ error: "Failed to convert to 3D model" });
   } finally {
+    // Clean up uploaded file
     if (req.file?.path) {
       try {
         await unlinkAsync(req.file.path);

@@ -92,7 +92,7 @@ const ARExperience: React.FC = () => {
       formData.append('image', selectedImage);
       
       // Call the backend API
-      const response = await fetch(`${apiUrl}/convert2dto3d`, {
+      const response = await fetch(`${apiUrl}/api/convert`, {
         method: 'POST',
         body: formData,
       });
