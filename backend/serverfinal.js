@@ -8,6 +8,7 @@ const path = require("path");
 const cloudinary = require("cloudinary").v2;
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
+const { promisify } = require("util"); 
 
 const app = express();
 const PORT = 5000;
