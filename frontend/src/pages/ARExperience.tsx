@@ -78,6 +78,8 @@ const ARExperience: React.FC = () => {
     setProgress(0);
   };
 
+  const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
   const startConversion = async () => {
     if (!selectedImage) return;
     
@@ -90,7 +92,7 @@ const ARExperience: React.FC = () => {
       formData.append('image', selectedImage);
       
       // Call the backend API
-      const response = await fetch('http://localhost:5000/convert2dto3d', {
+      const response = await fetch(`${apiUrl}/convert2dto3d`, {
         method: 'POST',
         body: formData,
       });
@@ -99,7 +101,7 @@ const ARExperience: React.FC = () => {
       
       if (data.success) {
         // Download the GLB file
-        const glbUrl = `http://localhost:5000${data.glb_url}`;
+        const glbUrl = `${apiUrl}${data.glb_url}`;
         const glbResponse = await fetch(glbUrl);
         const blob = await glbResponse.blob();
         const file = new File([blob], 'model.glb', { type: 'model/gltf-binary' });
